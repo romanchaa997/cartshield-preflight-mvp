@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cartshield.example/schemas/preflight-config-v0.1.json",
+  "title": "CartShield Preflight sanitized configuration input",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string", "maxLength": 120 },
+        "environment": { "enum": ["production", "staging", "development", "test"] },
+        "synthetic": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "api": {
+      "type": "object",
+      "properties": {
+        "publiclyReachable": { "type": "boolean" },
+        "managementEndpointPublic": { "type": "boolean" },
+        "authenticationRequired": { "type": "boolean" },
+        "returnsSensitiveData": { "type": "boolean" },
+        "cors": {
+          "type": "object",
+          "properties": {
+            "allowOrigins": { "type": "array", "items": { "type": "string" } },
+            "allowCredentials": { "type": "boolean" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "webhooks": {
+      "type": "object",
+      "properties": {
+        "provider": { "type": "string" },
+        "endpointUrl": { "type": "string" },
+        "signatureVerification": { "enum": ["enabled", "disabled", "unknown"] },
+        "duplicateHandling": { "enum": ["enabled", "disabled", "unknown"] }
+      },
+      "additionalProperties": true
+    },
+    "sessionCookie": {
+      "type": "object",
+      "properties": {
+        "secure": { "type": "boolean" },
+        "httpOnly": { "type": "boolean" },
+        "sameSite": { "enum": ["Strict", "Lax", "None", "Unset"] }
+      },
+      "additionalProperties": true
+    },
+    "browserResponses": {
+      "type": "object",
+      "properties": {
+        "returnsHtml": { "type": "boolean" },
+        "headers": {
+          "type": "object",
+          "properties": {
+            "contentSecurityPolicy": { "type": "string" },
+            "cacheControl": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "meta": { "label": "Synthetic demo — baseline controls present", "environment": "staging", "synthetic": true },
+  "api": {
+    "publiclyReachable": true,
+    "managementEndpointPublic": false,
+    "authenticationRequired": true,
+    "returnsSensitiveData": true,
+    "cors": { "allowOrigins": ["https://shop.example.invalid"], "allowCredentials": true }
+  },
+  "webhooks": {
+    "provider": "Shopify",
+    "endpointUrl": "https://hooks.example.invalid/shopify",
+    "signatureVerification": "enabled",
+    "duplicateHandling": "enabled"
+  },
+  "sessionCookie": { "secure": true, "httpOnly": true, "sameSite": "Lax" },
+  "browserResponses": {
+    "returnsHtml": true,
+    "headers": { "contentSecurityPolicy": "default-src 'self'; frame-ancestors 'none'", "cacheControl": "no-store" }
+  }
+}

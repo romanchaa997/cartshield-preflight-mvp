@@ -1,0 +1,10 @@
+{
+  "meta": { "label": "Synthetic demo — CORS review", "environment": "development", "synthetic": true },
+  "api": {
+    "publiclyReachable": true,
+    "managementEndpointPublic": false,
+    "authenticationRequired": true,
+    "returnsSensitiveData": false,
+    "cors": { "allowOrigins": ["*"], "allowCredentials": true }
+  }
+}

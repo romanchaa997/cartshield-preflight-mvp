@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f5f7f4">
+  <meta name="description" content="A local-first preflight review of sanitized or synthetic e-commerce configuration data.">
+  <title>CartShield Preflight — configuration review</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/analyzer.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="CartShield Preflight home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 3.5 27 7.7v7.1c0 7.3-4.6 11.8-11 14.2C10.6 26.6 6 22.1 6 14.8V7.7L16 3.5Z" fill="currentColor"/><path d="m11.3 15.9 3.1 3.1 6.5-6.7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="brand-copy"><span class="brand-name">CartShield <b>Preflight</b></span><span class="brand-caption">CONFIGURATION REVIEW</span></span>
+    </a>
+    <div class="topbar-meta">
+      <span class="local-pill"><i aria-hidden="true"></i> Local analysis</span>
+      <span class="topbar-divider" aria-hidden="true"></span>
+      <span class="version-label">DEMO · RULESET 0.1</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> PRE-RELEASE CONFIGURATION CHECK</p>
+        <h1 id="page-title">A clearer first look at your storefront’s security settings.</h1>
+        <p class="hero-description">Review a sanitized configuration or explore a synthetic example. Each signal comes with context, a practical next step, and a source to read further.</p>
+        <div class="hero-assurance"><span class="assurance-icon" aria-hidden="true">✓</span><span>Your JSON is analyzed in this browser tab. <strong>No store is contacted.</strong></span></div>
+      </div>
+      <aside class="scope-card" aria-label="Demo scope">
+        <div class="scope-card-head"><span class="scope-icon" aria-hidden="true">◎</span><span>DEMO SCOPE</span></div>
+        <h2>Focused checks.<br>Honest limits.</h2>
+        <p>12 targeted rules across APIs, webhooks, session cookies, CORS, and response headers.</p>
+        <div class="scope-card-rule"></div>
+        <div class="scope-foot"><span class="scope-dot" aria-hidden="true"></span><span>Static configuration only · 256 KB max</span></div>
+      </aside>
+    </section>
+
+    <section class="workspace" aria-label="Configuration review workspace">
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="panel-head">
+          <div class="step-label"><span class="step-number">01</span><span>CONFIGURATION</span></div>
+          <span id="input-size" class="size-label">0 bytes</span>
+        </div>
+        <div class="input-title-row">
+          <div><h2 id="input-title">Add your configuration</h2><p class="panel-subtitle">Use fabricated or sanitized JSON only.</p></div>
+          <span class="json-badge">JSON</span>
+        </div>
+        <div class="toolbar" aria-label="Load local example or file">
+          <label class="select-wrap" for="fixture-select"><span class="sr-only">Load a synthetic example</span>
+            <select id="fixture-select">
+              <option value="">Choose an example…</option>
+              <option value="risky-store.json">Needs review</option>
+              <option value="hardened-store.json">Baseline controls</option>
+              <option value="cors-demo.json">CORS edge case</option>
+            </select>
+          </label>
+          <label class="file-button" for="file-input"><span aria-hidden="true">↑</span> Open file<input id="file-input" type="file" accept="application/json,.json"></label>
+        </div>
+        <label class="sr-only" for="config-input">Sanitized configuration JSON</label>
+        <textarea id="config-input" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="input-guidance" placeholder="Paste a sanitized JSON configuration here…"></textarea>
+        <div class="editor-meta"><span class="editor-language"><i aria-hidden="true"></i> JSON input</span><span id="input-guidance">Never include secrets or customer data</span></div>
+        <div class="input-actions">
+          <p id="input-message" class="status-message" role="status" aria-live="polite">Ready for a synthetic example or sanitized configuration.</p>
+          <div class="button-row"><button id="clear-button" class="text-button" type="button">Clear</button><button id="analyze-button" class="primary-button" type="button" disabled>Analyze config <span aria-hidden="true">→</span></button></div>
+        </div>
+        <div class="input-note"><span class="note-icon" aria-hidden="true">i</span><p><strong>Local by design.</strong> The analyzer processes your input in this tab; it is not sent to a remote analysis service.</p></div>
+      </section>
+
+      <section class="panel results-panel" aria-labelledby="results-title" aria-live="polite">
+        <div class="panel-head result-head">
+          <div><div class="step-label"><span class="step-number">02</span><span>REVIEW</span></div><h2 id="results-title">Preflight report</h2></div>
+          <div class="report-actions"><button id="copy-button" class="secondary-button" type="button" disabled>Copy JSON</button><button id="export-button" class="icon-button" type="button" title="Download report JSON" aria-label="Download report JSON" disabled>↓</button></div>
+        </div>
+        <div id="empty-state" class="empty-state">
+          <div class="empty-illustration" aria-hidden="true"><span class="empty-ring ring-one"></span><span class="empty-ring ring-two"></span><span class="empty-shield"><svg viewBox="0 0 32 32" fill="none"><path d="M16 4 26 8v6.5c0 6.5-4.2 10.5-10 13-5.8-2.5-10-6.5-10-13V8l10-4Z" stroke="currentColor" stroke-width="1.8"/><path d="M16 10v7m0 4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></div>
+          <p class="empty-kicker">YOUR REVIEW STARTS HERE</p>
+          <h3>Nothing analyzed yet</h3>
+          <p>Choose a synthetic example or add sanitized JSON. We’ll show matched checks and what the input did not cover.</p>
+          <div class="empty-limit"><span aria-hidden="true">↳</span> Missing fields are marked not assessed — never assumed safe.</div>
+        </div>
+        <div id="report" class="report hidden"></div>
+      </section>
+    </section>
+
+    <section class="checks-strip" aria-labelledby="checks-title">
+      <div class="checks-heading"><div><p class="eyebrow">WHAT’S IN THIS DEMO</p><h2 id="checks-title">A focused set of configuration signals</h2></div><p>Not a scanner, penetration test, compliance assessment, or security certification.</p></div>
+      <div class="check-grid">
+        <article class="check-item"><span class="check-icon api-icon" aria-hidden="true">⌘</span><div><h3>API &amp; CORS</h3><p>Access flags, management exposure, and wildcard origin behavior.</p></div></article>
+        <article class="check-item"><span class="check-icon webhook-icon" aria-hidden="true">↗</span><div><h3>Webhooks</h3><p>HTTPS, Shopify signature verification, and duplicate handling.</p></div></article>
+        <article class="check-item"><span class="check-icon cookie-icon" aria-hidden="true">◉</span><div><h3>Session cookies</h3><p>Secure, HttpOnly, and SameSite declarations.</p></div></article>
+        <article class="check-item"><span class="check-icon headers-icon" aria-hidden="true">≡</span><div><h3>Response headers</h3><p>Content Security Policy and sensitive-response cache controls.</p></div></article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-boundary"><span class="footer-lock" aria-hidden="true">⌑</span><p><strong>Keep real secrets out of the input.</strong> Never paste passwords, API keys, webhook secrets, session tokens, customer data, payment data, or private URLs. Findings are declaration-based and must be checked against the real architecture.</p></div>
+      <div class="footer-bottom"><span>CartShield Preflight · local static demo · no telemetry</span><span class="source-links">Sources: <a href="https://shopify.dev/docs/apps/build/webhooks/verify-deliveries" target="_blank" rel="noreferrer">Shopify</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html" target="_blank" rel="noreferrer">OWASP REST</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html" target="_blank" rel="noreferrer">OWASP Sessions</a> · <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS" target="_blank" rel="noreferrer">MDN CORS</a></span></div>
+    </footer>
+  </main>
+</body>
+</html>

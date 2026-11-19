@@ -1,0 +1,21 @@
+{
+  "meta": { "label": "Synthetic demo — needs review", "environment": "production", "synthetic": true },
+  "api": {
+    "publiclyReachable": true,
+    "managementEndpointPublic": true,
+    "authenticationRequired": false,
+    "returnsSensitiveData": true,
+    "cors": { "allowOrigins": ["*"], "allowCredentials": true }
+  },
+  "webhooks": {
+    "provider": "Shopify",
+    "endpointUrl": "http://hooks.example.invalid/shopify",
+    "signatureVerification": "disabled",
+    "duplicateHandling": "disabled"
+  },
+  "sessionCookie": { "secure": false, "httpOnly": false, "sameSite": "None" },
+  "browserResponses": {
+    "returnsHtml": true,
+    "headers": { "contentSecurityPolicy": "", "cacheControl": "public, max-age=60" }
+  }
+}
