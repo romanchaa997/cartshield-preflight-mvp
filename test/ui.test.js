@@ -3,6 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
@@ -37,6 +38,11 @@ test('UI analyzes locally, loads fixtures same-origin, and renders values withou
   const html = read('public/index.html');
   assert.match(html, /src="\/worksheet\.js"/);
   assert.match(read('server.js'), /url\.pathname === '\/worksheet\.js'/);
+});
+
+test('browser scripts compile together in page load order without global lexical collisions', () => {
+  const browserScripts = ['src/analyzer.js', 'src/worksheet.js', 'public/app.js'].map(read).join('\n;\n');
+  assert.doesNotThrow(() => new vm.Script(browserScripts));
 });
 
 test('demo exposes four coverage areas and three synthetic fixture files', () => {

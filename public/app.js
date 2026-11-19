@@ -1,3 +1,4 @@
+(() => {
 'use strict';
 const input = document.getElementById('config-input');
 const analyzeButton = document.getElementById('analyze-button');
@@ -400,3 +401,4 @@ exportButton.addEventListener('click', () => {
 updateSize();
 renderWorksheet();
 setWorksheetStatus(`Worksheet is temporary to this tab. Add up to ${MAX_SUBJECTS} subjects; nothing is saved automatically.`);
+})();
