@@ -52,3 +52,16 @@ Deliver a finished, responsive demo interface and Kiro specification for the exi
 3. The server SHALL retain restrictive security headers, including CSP, `nosniff`, anti-framing, no-referrer, and `no-store`.
 4. Automated tests SHALL pass with `npm test`.
 5. The `.kiro/` specification SHALL document product constraints, design decisions, and implementation tasks.
+
+
+## Requirement 6 — Compare a bounded set of subjects locally
+**User story:** As a reviewer, I want to aggregate reports from multiple sanitized configurations and compare their findings and coverage, so I can spot repeated and subject-specific review signals without treating the result as a security score.
+
+### Acceptance criteria
+1. The reviewer SHALL be able to add the current report or import multiple local JSON configuration files.
+2. The worksheet SHALL accept no more than 10 subjects and no more than 256 KB per imported file, SHALL validate that each root is a JSON object, and SHALL explain skipped files.
+3. The worksheet SHALL show per-subject finding counts by severity and supplied/not-assessed coverage, plus distinct and recurring findings across subjects.
+4. The worksheet SHALL permit removal of an individual subject and clearing the worksheet independently from the editor.
+5. Worksheet entries SHALL be held only in browser-tab memory unless the reviewer explicitly uses a local export; the app SHALL NOT upload, persist, or transmit the data.
+6. JSON and CSV exports SHALL contain reports and comparison data, not the original configurations; CSV cells SHALL be escaped against common spreadsheet formula execution.
+7. Comparison copy SHALL state that it is declaration-based, not runtime-verified, and is not a safety, compliance, or compromise verdict.

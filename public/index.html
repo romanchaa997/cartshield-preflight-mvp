@@ -9,6 +9,7 @@
   <title>CartShield Preflight — configuration review</title>
   <link rel="stylesheet" href="/styles.css">
   <script src="/analyzer.js" defer></script>
+  <script src="/worksheet.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -39,7 +40,7 @@
         <h2>Focused checks.<br>Honest limits.</h2>
         <p>12 targeted rules across APIs, webhooks, session cookies, CORS, and response headers.</p>
         <div class="scope-card-rule"></div>
-        <div class="scope-foot"><span class="scope-dot" aria-hidden="true"></span><span>Static configuration only · 256 KB max</span></div>
+        <div class="scope-foot"><span class="scope-dot" aria-hidden="true"></span><span>Static configuration only · 256 KB max per file</span></div>
       </aside>
     </section>
 
@@ -69,7 +70,7 @@
         <div class="editor-meta"><span class="editor-language"><i aria-hidden="true"></i> JSON input</span><span id="input-guidance">Never include secrets or customer data</span></div>
         <div class="input-actions">
           <p id="input-message" class="status-message" role="status" aria-live="polite">Ready for a synthetic example or sanitized configuration.</p>
-          <div class="button-row"><button id="clear-button" class="text-button" type="button">Clear</button><button id="analyze-button" class="primary-button" type="button" disabled>Analyze config <span aria-hidden="true">→</span></button></div>
+          <div class="button-row"><button id="clear-button" class="text-button" type="button">Clear</button><button id="add-worksheet-button" class="secondary-button" type="button" disabled>Add to worksheet</button><button id="analyze-button" class="primary-button" type="button" disabled>Analyze config <span aria-hidden="true">→</span></button></div>
         </div>
         <div class="input-note"><span class="note-icon" aria-hidden="true">i</span><p><strong>Local by design.</strong> The analyzer processes your input in this tab; it is not sent to a remote analysis service.</p></div>
       </section>
@@ -88,6 +89,24 @@
         </div>
         <div id="report" class="report hidden"></div>
       </section>
+    </section>
+
+    <section class="panel worksheet-panel" aria-labelledby="worksheet-title">
+      <div class="panel-head worksheet-head">
+        <div><div class="step-label"><span class="step-number">03</span><span>AGGREGATION WORKSHEET</span></div><h2 id="worksheet-title">Compare subjects and recurring checks</h2><p class="panel-subtitle">Compare up to 10 local reviews side by side. Nothing is saved automatically.</p></div>
+        <div class="worksheet-actions">
+          <label class="file-button worksheet-file-label" for="worksheet-files">＋ Add JSON files<input id="worksheet-files" type="file" accept="application/json,.json" multiple aria-describedby="worksheet-guidance"></label>
+          <button id="copy-worksheet-button" class="secondary-button" type="button" disabled>Copy worksheet</button>
+          <button id="export-worksheet-button" class="secondary-button" type="button" disabled>Download JSON</button>
+          <button id="export-worksheet-csv-button" class="secondary-button" type="button" disabled>Download CSV</button>
+          <button id="clear-worksheet-button" class="text-button" type="button" disabled>Clear worksheet</button>
+        </div>
+      </div>
+      <div class="worksheet-body">
+        <p id="worksheet-guidance" class="worksheet-guidance">Each file must be a JSON object and no larger than 256 KB. Entries and exports contain reports, not the original configuration files. The worksheet clears when this tab is closed or refreshed.</p>
+        <p id="worksheet-status" class="worksheet-status" role="status" aria-live="polite">Worksheet is temporary to this tab.</p>
+        <div id="worksheet-content" class="worksheet-content"></div>
+      </div>
     </section>
 
     <section class="checks-strip" aria-labelledby="checks-title">

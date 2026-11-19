@@ -21,17 +21,18 @@ Open <http://127.0.0.1:4173>. The server binds to localhost by default; set `POR
 
 - Accepts sanitized JSON by paste or local file, or loads one of the synthetic examples.
 - Analyzes the input in the browser and shows findings, source citations, qualitative priority, confidence caveats, and which areas were assessed.
-- Copies or downloads a JSON report locally; no account, upload, telemetry, remote analysis, or persistence is included.
+- Builds a comparison worksheet from the current report or several local JSON files. It compares up to 10 subjects, highlights recurring and subject-specific checks, summarizes severity and coverage, and supports removing individual subjects.
+- Copies or downloads a single JSON report, or exports the worksheet as JSON or a spreadsheet-ready CSV. Worksheet entries stay in browser memory only and are cleared when the tab is refreshed or closed; export is a user-initiated local download.
 - Serves static UI files and synthetic fixtures through a small Node.js server limited to `GET` and `HEAD` requests.
-- Enforces a 256 KB input limit and includes Node built-in tests.
+- Enforces a 256 KB limit per configuration and includes Node built-in tests.
 
-Current checks cover public or management API flags, Shopify webhook HTTPS/HMAC/duplicate handling assertions, session-cookie Secure/HttpOnly/SameSite flags, wildcard CORS behavior, Content Security Policy presence for HTML, and `no-store` for responses marked sensitive. See [`config.schema.json`](./config.schema.json) for the current input shape and [`SECURITY_REVIEW_CHECKLIST.md`](./SECURITY_REVIEW_CHECKLIST.md) for known review work.
+Current checks cover public or management API flags, Shopify webhook HTTPS/HMAC/duplicate handling assertions, session-cookie Secure/HttpOnly/SameSite flags, wildcard CORS behavior, Content Security Policy presence for HTML, and `no-store` for responses marked sensitive. See [`config.schema.json`](./config.schema.json) for the current input shape and [`SECURITY_REVIEW_CHECKLIST.md`](./SECURITY_REVIEW_CHECKLIST.md) for known review work. Recommended next product improvements are documented in [`STRATEGIC_RECOMMENDATIONS.md`](./STRATEGIC_RECOMMENDATIONS.md).
 
 ## Safe-use boundary
 
 Use only fabricated or sanitized values. Never paste passwords, API keys, webhook secrets, session tokens, customer or payment data, or private URLs. Example domains use `.invalid` and are not live targets.
 
-The tool does not probe, fetch, crawl, or authenticate to a store. It does not authorize testing any system. Findings are based on supplied declarations, are not runtime-verified, and do not establish exploitability, compromise, or compliance. A supplied value may be stale or incomplete; missing sections are marked not assessed, and “no findings” means only that none of the implemented rules matched the supplied fields. Rules are intentionally narrow and may not fit platforms beyond the documented cases.
+The tool does not probe, fetch, crawl, or authenticate to a store. It does not authorize testing any system. Findings are based on supplied declarations, are not runtime-verified, and do not establish exploitability, compromise, or compliance. A supplied value may be stale or incomplete; missing sections are marked not assessed, and “no findings” means only that none of the implemented rules matched the supplied fields. Rules are intentionally narrow and may not fit platforms beyond the documented cases. The worksheet compares these limited reports; it is not a security score or a proof that one subject is safer than another.
 
 ## Evidence sources
 
@@ -47,7 +48,7 @@ npm test
 npm start
 ```
 
-The analyzer is in `src/analyzer.js`; the UI is in `public/`; fixtures are in `fixtures/`. Tests use Node's built-in test runner. The `.kiro/` directory contains product steering and demo-experience specifications used by the project tests.
+The analyzer is in `src/analyzer.js`; aggregation is in `src/worksheet.js`; the UI is in `public/`; fixtures are in `fixtures/`. Tests use Node's built-in test runner. The `.kiro/` directory contains product steering and demo-experience specifications used by the project tests.
 
 ## License
 

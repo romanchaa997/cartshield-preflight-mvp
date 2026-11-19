@@ -229,3 +229,47 @@ textarea::placeholder { color: #a0aaa4; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+.worksheet-panel { margin-top: 16px; }
+.worksheet-head { align-items: flex-start; flex-wrap: wrap; }
+.worksheet-head h2 { margin: 6px 0 0; color: var(--ink); font-size: 16px; letter-spacing: -.035em; }
+.worksheet-head .panel-subtitle { margin-top: 5px; }
+.worksheet-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
+.worksheet-actions .secondary-button, .worksheet-actions .text-button, .worksheet-file-label { font-size: 9px; }
+.worksheet-actions .text-button:disabled { opacity: .5; cursor: not-allowed; }
+.worksheet-file-label { position: relative; overflow: hidden; }
+.worksheet-file-label:has(input:disabled) { opacity: .48; cursor: not-allowed; }
+.worksheet-body { padding: 12px 18px 17px; }
+.worksheet-guidance, .worksheet-note { margin: 0 0 8px; color: #718078; font-size: 9px; line-height: 1.55; }
+.worksheet-status { margin: 0 0 10px; color: #315b46; font-size: 9px; line-height: 1.5; }
+.worksheet-empty { margin: 0; padding: 18px 12px; border: 1px dashed #dce6de; border-radius: 8px; color: #74827a; background: #fafcfb; font-size: 10px; line-height: 1.55; }
+.worksheet-empty.compact { margin-bottom: 10px; padding: 10px; }
+.worksheet-stats { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 9px; }
+.worksheet-stats span { padding: 6px 8px; border: 1px solid #e6ece7; border-radius: 6px; color: #496153; background: #f8faf8; font-size: 8px; font-weight: 750; }
+.worksheet-severity { margin-bottom: 11px; }
+.worksheet-subheading { margin: 14px 0 7px; color: #36483d; font-size: 10px; }
+.worksheet-table-wrap { width: 100%; margin: 0 0 10px; overflow-x: auto; border: 1px solid #e7ece7; border-radius: 8px; }
+.worksheet-table { width: 100%; min-width: 740px; border-collapse: collapse; color: #53645a; font-size: 8px; text-align: left; }
+.worksheet-table th, .worksheet-table td { padding: 8px 9px; border-bottom: 1px solid #edf1ed; vertical-align: top; }
+.worksheet-table thead th { color: #52675b; background: #f6f9f6; font-size: 7px; font-weight: 800; white-space: nowrap; }
+.worksheet-table tbody tr:last-child th, .worksheet-table tbody tr:last-child td { border-bottom: 0; }
+.worksheet-table tbody tr:nth-child(even) { background: #fbfcfb; }
+.worksheet-table .subject-name { min-width: 120px; color: #344b3c; font-weight: 750; text-align: left; }
+.finding-aggregation-table { min-width: 600px; }
+.finding-aggregation-table td:first-child { min-width: 220px; max-width: 380px; line-height: 1.45; }
+.finding-aggregation-table td:last-child { min-width: 150px; }
+.remove-subject-button { border: 1px solid #eadfdf; border-radius: 5px; padding: 4px 7px; color: #8e504b; background: #fff; font-size: 8px; cursor: pointer; }
+.remove-subject-button:hover { border-color: #d7b3b0; background: #fcf6f5; }
+.worksheet-note { margin: 2px 0 0; padding: 8px 10px; border-left: 2px solid #80b999; color: #67766c; background: #f5f8f5; }
+@media (max-width: 900px) {
+  .worksheet-head { display: block; }
+  .worksheet-actions { justify-content: flex-start; margin-top: 12px; }
+}
+@media (max-width: 600px) {
+  .worksheet-head { padding: 13px; }
+  .worksheet-actions { gap: 6px; }
+  .worksheet-actions .secondary-button, .worksheet-actions .text-button, .worksheet-file-label { height: 32px; padding-right: 8px; padding-left: 8px; font-size: 8px; }
+  .worksheet-body { padding: 11px 13px 14px; }
+  .worksheet-stats span { font-size: 7px; }
+  .worksheet-table { font-size: 8px; }
+}

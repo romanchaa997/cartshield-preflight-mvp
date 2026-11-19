@@ -6,15 +6,17 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
-test('demo page exposes accessible local input, report, and export controls', () => {
+test('demo page exposes accessible local input, report, and worksheet controls', () => {
   const html = read('public/index.html');
-  for (const id of ['config-input', 'input-message', 'input-size', 'fixture-select', 'file-input', 'clear-button', 'analyze-button', 'copy-button', 'export-button', 'empty-state', 'report']) {
+  for (const id of ['config-input', 'input-message', 'input-size', 'fixture-select', 'file-input', 'clear-button', 'analyze-button', 'add-worksheet-button', 'copy-button', 'export-button', 'empty-state', 'report', 'worksheet-files', 'worksheet-status', 'worksheet-content', 'clear-worksheet-button', 'copy-worksheet-button', 'export-worksheet-button', 'export-worksheet-csv-button']) {
     assert.match(html, new RegExp(`id="${id}"`), `missing UI control: ${id}`);
   }
   assert.match(html, /No store is contacted/);
   assert.match(html, /Never include secrets or customer data/);
   assert.match(html, /aria-live="polite"/);
   assert.match(html, /256 KB/);
+  assert.match(html, /Nothing is saved automatically/);
+  assert.match(html, /multiple aria-describedby="worksheet-guidance"/);
 });
 
 test('UI analyzes locally, loads fixtures same-origin, and renders values without HTML injection', () => {
@@ -26,6 +28,15 @@ test('UI analyzes locally, loads fixtures same-origin, and renders values withou
   assert.match(app, /createTextNode/);
   assert.match(app, /analyzeConfig\(config\)/);
   assert.match(app, /cartshield-preflight-report\.json/);
+  assert.match(app, /cartshield-preflight-worksheet\.json/);
+  assert.match(app, /cartshield-preflight-comparison\.csv/);
+  assert.match(app, /worksheet\.length >= MAX_SUBJECTS/);
+  assert.match(app, /256 KB per-file limit/);
+  assert.match(read('src/worksheet.js'), /function toComparisonCsv/);
+  assert.match(read('src/worksheet.js'), /spreadsheetSafe/);
+  const html = read('public/index.html');
+  assert.match(html, /src="\/worksheet\.js"/);
+  assert.match(read('server.js'), /url\.pathname === '\/worksheet\.js'/);
 });
 
 test('demo exposes four coverage areas and three synthetic fixture files', () => {

@@ -23,3 +23,13 @@ This checklist is for reviewing the scaffold itself before extending or deployin
 - [ ] Consider a signed rule pack or documented versioning if findings must be reproducible across releases.
 - [ ] Define privacy and retention controls before adding persistence, accounts, uploads, telemetry, or remote analysis.
 - [ ] Require explicit authorization, bounded assets, safe methods, a time window, stop conditions, and operational approval before any future active validation. Default to passive configuration review.
+
+
+## Aggregation worksheet extension
+
+- [x] Caps worksheets at 10 subjects and each imported file at 256 KB; validates JSON object roots.
+- [x] Keeps comparison state in browser-tab memory only; exports only reports and aggregates, not original configuration objects.
+- [x] Renders subject labels and report data using text APIs; does not add a remote request path.
+- [x] Quotes CSV cells and prefixes formula-like values before export.
+- [x] Tests recurring check aggregation, severity totals, coverage, malformed worksheet entries, UI controls, and local-only code contracts.
+- [ ] Before broader distribution, test CSV imports in target spreadsheet apps and exercise the interface in supported mobile browsers.

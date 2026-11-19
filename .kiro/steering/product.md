@@ -27,4 +27,5 @@ CartShield Preflight is a local-first, explainable preflight review of sanitized
 - Paste sanitized JSON, open a local JSON file, or load a synthetic fixture.
 - Analyze in the browser; view findings, source links, qualitative priority, confidence, and input coverage.
 - Copy or locally download the JSON report; clear the workspace; use Ctrl/Command+Enter to run the review.
+- Add an analyzed report or multiple local JSON objects to a tab-memory-only worksheet; compare up to 10 subjects, aggregate recurring findings and coverage, and export JSON or formula-escaped CSV locally.
 - Responsive accessible interface; no third-party runtime packages.

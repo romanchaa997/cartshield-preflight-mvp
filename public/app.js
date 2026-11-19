@@ -1,7 +1,7 @@
 'use strict';
-
 const input = document.getElementById('config-input');
 const analyzeButton = document.getElementById('analyze-button');
+const addWorksheetButton = document.getElementById('add-worksheet-button');
 const clearButton = document.getElementById('clear-button');
 const inputMessage = document.getElementById('input-message');
 const inputSize = document.getElementById('input-size');
@@ -12,8 +12,18 @@ const copyButton = document.getElementById('copy-button');
 const exportButton = document.getElementById('export-button');
 const fixtureSelect = document.getElementById('fixture-select');
 const fileInput = document.getElementById('file-input');
+const worksheetNode = document.getElementById('worksheet-content');
+const worksheetStatus = document.getElementById('worksheet-status');
+const worksheetFiles = document.getElementById('worksheet-files');
+const clearWorksheetButton = document.getElementById('clear-worksheet-button');
+const copyWorksheetButton = document.getElementById('copy-worksheet-button');
+const exportWorksheetButton = document.getElementById('export-worksheet-button');
+const exportWorksheetCsvButton = document.getElementById('export-worksheet-csv-button');
 const MAX_BYTES = 256 * 1024;
+const MAX_SUBJECTS = window.CartShieldWorksheet.MAX_SUBJECTS;
 let latestReport = null;
+let worksheet = [];
+let nextWorksheetId = 1;
 
 function bytesOf(text) { return new TextEncoder().encode(text).length; }
 function element(tag, className, text) {
@@ -26,6 +36,7 @@ function setMessage(text, isError = false) {
   inputMessage.textContent = text;
   inputMessage.classList.toggle('error', isError);
 }
+function setWorksheetStatus(text) { worksheetStatus.textContent = text; }
 function updateSize() {
   const size = bytesOf(input.value);
   inputSize.textContent = `${size.toLocaleString()} bytes`;
@@ -33,6 +44,15 @@ function updateSize() {
   if (size > MAX_BYTES) setMessage('Input exceeds the 256 KB limit.', true);
   else if (!input.value.trim()) setMessage('Ready for a synthetic example or sanitized configuration.');
   else setMessage('Input is local. Review for secrets before analysis.');
+}
+function updateWorksheetControls() {
+  addWorksheetButton.disabled = !latestReport || worksheet.length >= MAX_SUBJECTS;
+  const hasSubjects = worksheet.length > 0;
+  clearWorksheetButton.disabled = !hasSubjects;
+  copyWorksheetButton.disabled = !hasSubjects;
+  exportWorksheetButton.disabled = !hasSubjects;
+  exportWorksheetCsvButton.disabled = !hasSubjects;
+  worksheetFiles.disabled = worksheet.length >= MAX_SUBJECTS;
 }
 function resetReport() {
   latestReport = null;
@@ -43,6 +63,7 @@ function resetReport() {
   copyButton.disabled = true;
   exportButton.disabled = true;
   copyButton.textContent = 'Copy JSON';
+  updateWorksheetControls();
 }
 async function loadText(text, label) {
   if (bytesOf(text) > MAX_BYTES) throw new Error('File or input exceeds the 256 KB limit.');
@@ -131,6 +152,7 @@ function renderReport(report) {
   resultsTitle.textContent = report.inputLabel;
   copyButton.disabled = false;
   exportButton.disabled = false;
+  updateWorksheetControls();
 
   const banner = element('div', 'report-banner');
   banner.append(element('span', 'report-banner-icon', report.summary.totalFindings ? '!' : '✓'));
@@ -172,6 +194,169 @@ function renderReport(report) {
   for (const finding of report.findings) reportNode.append(renderFinding(finding));
 }
 
+function appendCell(row, tag, text, className) {
+  const cell = element(tag, className || '', text);
+  row.append(cell);
+  return cell;
+}
+function makeTable(headers, className) {
+  const wrap = element('div', 'worksheet-table-wrap');
+  const table = element('table', `worksheet-table ${className || ''}`);
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  headers.forEach((header) => appendCell(headerRow, 'th', header));
+  thead.append(headerRow);
+  table.append(thead);
+  const tbody = document.createElement('tbody');
+  table.append(tbody);
+  wrap.append(table);
+  return { wrap, tbody };
+}
+function renderWorksheet() {
+  worksheetNode.replaceChildren();
+  if (!worksheet.length) {
+    worksheetNode.append(element('p', 'worksheet-empty', 'No subjects yet. Analyze a configuration and add it, or import several sanitized JSON files from your device.'));
+    updateWorksheetControls();
+    return;
+  }
+  const aggregate = window.CartShieldWorksheet.aggregateWorksheet(worksheet);
+  const stats = element('div', 'worksheet-stats');
+  stats.append(element('span', '', `${aggregate.subjectCount} / ${MAX_SUBJECTS} subjects`));
+  stats.append(element('span', '', `${aggregate.totalFindings} total finding occurrences`));
+  stats.append(element('span', '', `${aggregate.uniqueChecksRaised} distinct checks`));
+  stats.append(element('span', '', `${aggregate.commonFindingCount} checks in every subject`));
+  worksheetNode.append(stats);
+
+  const severityRow = element('div', 'summary-row worksheet-severity');
+  for (const [severity, count] of Object.entries(aggregate.severityTotals)) {
+    if (count) severityRow.append(element('span', `summary-chip ${severity.toLowerCase()}`, `${severity}: ${count} across subjects`));
+  }
+  if (!aggregate.totalFindings) severityRow.append(element('span', 'summary-chip', 'No configured findings in the worksheet'));
+  worksheetNode.append(severityRow);
+
+  const subjectHeading = element('h3', 'worksheet-subheading', 'Subject comparison');
+  worksheetNode.append(subjectHeading);
+  const subjectsTable = makeTable(['Subject', 'Environment', 'Findings', 'High', 'Moderate', 'Low', 'Informational', 'Coverage', 'Action'], 'subject-table');
+  for (const subject of aggregate.subjects) {
+    const row = document.createElement('tr');
+    appendCell(row, 'th', subject.label, 'subject-name');
+    appendCell(row, 'td', subject.environment);
+    appendCell(row, 'td', subject.findingTotal);
+    for (const severity of window.CartShieldWorksheet.SEVERITY_ORDER) appendCell(row, 'td', subject.severityCounts[severity]);
+    appendCell(row, 'td', `${subject.providedAreas.length} / ${subject.providedAreas.length + subject.notAssessedAreas.length} assessed`);
+    const action = appendCell(row, 'td', '');
+    const removeButton = element('button', 'remove-subject-button', 'Remove');
+    removeButton.type = 'button';
+    removeButton.setAttribute('aria-label', `Remove ${subject.label} from worksheet`);
+    removeButton.addEventListener('click', () => {
+      worksheet = worksheet.filter((entry) => entry.id !== subject.id);
+      renderWorksheet();
+      setWorksheetStatus(`${subject.label} removed. Worksheet remains only in this browser tab.`);
+    });
+    action.append(removeButton);
+    subjectsTable.tbody.append(row);
+  }
+  worksheetNode.append(subjectsTable.wrap);
+
+  const findingsHeading = element('h3', 'worksheet-subheading', 'Aggregated checks');
+  worksheetNode.append(findingsHeading);
+  if (!aggregate.findings.length) {
+    worksheetNode.append(element('p', 'worksheet-empty compact', 'No configured checks were raised across the included subjects. Missing coverage is still not assessed.'));
+  } else {
+    const findingsTable = makeTable(['Check', 'Severity', 'Subjects affected', 'Comparison'], 'finding-aggregation-table');
+    for (const finding of aggregate.findings) {
+      const row = document.createElement('tr');
+      appendCell(row, 'td', `${finding.id} · ${finding.title}`);
+      appendCell(row, 'td', finding.severity);
+      appendCell(row, 'td', `${finding.subjectCount} / ${finding.subjectTotal}`);
+      appendCell(row, 'td', finding.common ? 'Present in every subject' : finding.subjectLabels.join(', '));
+      findingsTable.tbody.append(row);
+    }
+    worksheetNode.append(findingsTable.wrap);
+  }
+  const note = element('p', 'worksheet-note', aggregate.note);
+  worksheetNode.append(note);
+  updateWorksheetControls();
+}
+function addReport(report) {
+  if (worksheet.length >= MAX_SUBJECTS) return false;
+  worksheet.push({ id: `subject-${nextWorksheetId++}`, report });
+  renderWorksheet();
+  return true;
+}
+addWorksheetButton.addEventListener('click', () => {
+  if (!latestReport) return;
+  if (!addReport(latestReport)) return setWorksheetStatus(`Worksheet limit reached (${MAX_SUBJECTS} subjects). Remove one before adding another.`);
+  setWorksheetStatus(`Added “${latestReport.inputLabel}” to the in-memory worksheet. Nothing was saved or sent.`);
+});
+worksheetFiles.addEventListener('change', async () => {
+  const files = Array.from(worksheetFiles.files || []);
+  if (!files.length) return;
+  const available = MAX_SUBJECTS - worksheet.length;
+  const selected = files.slice(0, available);
+  let added = 0;
+  const skipped = [];
+  for (const file of selected) {
+    try {
+      if (file.size > MAX_BYTES) throw new Error('over the 256 KB per-file limit');
+      const config = JSON.parse(await file.text());
+      if (!config || Array.isArray(config) || typeof config !== 'object') throw new Error('root JSON value must be an object');
+      if (!config.meta || typeof config.meta !== 'object' || Array.isArray(config.meta)) config.meta = {};
+      if (!String(config.meta.label || '').trim()) config.meta.label = file.name;
+      const report = window.CartShieldAnalyzer.analyzeConfig(config);
+      if (addReport(report)) added += 1;
+    } catch (error) {
+      skipped.push(`${file.name}: ${error.message}`);
+    }
+  }
+  const notSelected = files.length - selected.length;
+  const details = [...skipped, ...(notSelected ? [`${notSelected} file(s) not added because the ${MAX_SUBJECTS}-subject limit was reached`] : [])];
+  setWorksheetStatus(`${added} file(s) added locally.${details.length ? ` Skipped: ${details.join('; ')}` : ''}`);
+  worksheetFiles.value = '';
+});
+clearWorksheetButton.addEventListener('click', () => {
+  worksheet = [];
+  renderWorksheet();
+  setWorksheetStatus('Worksheet cleared. It was held only in this browser tab.');
+});
+function worksheetPayload() {
+  return {
+    product: 'CartShield Preflight',
+    generatedAt: new Date().toISOString(),
+    aggregation: window.CartShieldWorksheet.aggregateWorksheet(worksheet),
+    subjects: worksheet.map(({ id, report }) => ({ id, report }))
+  };
+}
+function downloadText(text, type, filename) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+copyWorksheetButton.addEventListener('click', async () => {
+  if (!worksheet.length) return;
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(worksheetPayload(), null, 2));
+    setWorksheetStatus('Worksheet JSON copied locally.');
+  } catch {
+    setWorksheetStatus('Clipboard access unavailable. Use a local worksheet download instead.');
+  }
+});
+exportWorksheetButton.addEventListener('click', () => {
+  if (!worksheet.length) return;
+  downloadText(JSON.stringify(worksheetPayload(), null, 2), 'application/json', 'cartshield-preflight-worksheet.json');
+  setWorksheetStatus('Worksheet JSON downloaded locally.');
+});
+exportWorksheetCsvButton.addEventListener('click', () => {
+  if (!worksheet.length) return;
+  downloadText(window.CartShieldWorksheet.toComparisonCsv(worksheet), 'text/csv;charset=utf-8', 'cartshield-preflight-comparison.csv');
+  setWorksheetStatus('Comparison CSV downloaded locally. Spreadsheet text is escaped to reduce formula injection risk.');
+});
+
 analyzeButton.addEventListener('click', () => {
   try {
     if (bytesOf(input.value) > MAX_BYTES) throw new Error('Input exceeds the 256 KB limit.');
@@ -209,15 +394,9 @@ copyButton.addEventListener('click', async () => {
 });
 exportButton.addEventListener('click', () => {
   if (!latestReport) return;
-  const blob = new Blob([JSON.stringify(latestReport, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = 'cartshield-preflight-report.json';
-  document.body.append(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(url);
+  downloadText(JSON.stringify(latestReport, null, 2), 'application/json', 'cartshield-preflight-report.json');
   setMessage('Report downloaded locally as JSON.');
 });
 updateSize();
+renderWorksheet();
+setWorksheetStatus(`Worksheet is temporary to this tab. Add up to ${MAX_SUBJECTS} subjects; nothing is saved automatically.`);

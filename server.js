@@ -7,6 +7,7 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, 'public');
 const FIXTURES = path.join(__dirname, 'fixtures');
 const ANALYZER = path.join(__dirname, 'src', 'analyzer.js');
+const WORKSHEET = path.join(__dirname, 'src', 'worksheet.js');
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = Number(process.env.PORT || 4173);
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
@@ -29,7 +30,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url || '/', `http://${HOST}:${PORT}`);
   const base = url.pathname.startsWith('/fixtures/') ? FIXTURES : ROOT;
   const relativePath = url.pathname.startsWith('/fixtures/') ? url.pathname.slice('/fixtures/'.length) : (url.pathname === '/' ? 'index.html' : url.pathname.slice(1));
-  const file = url.pathname === '/analyzer.js' ? ANALYZER : safeFile(base, relativePath);
+  const file = url.pathname === '/analyzer.js' ? ANALYZER : (url.pathname === '/worksheet.js' ? WORKSHEET : safeFile(base, relativePath));
   if (!file) {
     res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Bad request');
